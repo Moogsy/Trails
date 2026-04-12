@@ -1,12 +1,11 @@
 import uuid
 from datetime import datetime
 
-from psycopg2.extras import DateTimeTZRange
 from sqlalchemy import Index
 from sqlalchemy.orm import Mapped, mapped_column
-from sqlalchemy.dialects.postgresql import TSTZMULTIRANGE
+from sqlalchemy.dialects.postgresql import TSTZMULTIRANGE, Range
 
-from db import Base
+from db.base import Base
 from db.base import (
     uuid_mapped_column, 
     user_uuid_mapped_column, 
@@ -21,7 +20,7 @@ class Availability(Base):
     user_id: Mapped[uuid.UUID] = user_uuid_mapped_column()
 
     # Timestamp over that day only
-    availability: Mapped[list[DateTimeTZRange]] = mapped_column(
+    availability: Mapped[list[Range[datetime]]] = mapped_column(
         TSTZMULTIRANGE, 
         nullable=False
     )

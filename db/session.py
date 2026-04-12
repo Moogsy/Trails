@@ -1,105 +1,44 @@
-import enum
 import uuid
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 from datetime import datetime
-from sqlalchemy import ForeignKey, String, Index, Integer
-from sqlalchemy.dialects.postgresql import UUID
-
+from sqlalchemy import Integer
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from db.base import (
-    Base, 
-    TIMESTAMP_WITH_TZ_SEC_PRECISION, 
-    ck_user_order,
-    dt_utc_now,
+    Base,
+    TIMESTAMP_WITH_TZ_SEC_PRECISION,
     uuid_mapped_column,
 )
 
 if TYPE_CHECKING:
-    from db.user import User
-
-
-class SessionStatus(enum.Enum):
-    CREATED = "created"
-    RUNNING = "running"
-    ENDED = "ended"
+    from db.session_participant import SessionParticipant
 
 
 class Session(Base):
     __tablename__ = "sessions"
 
-    # Initially populated
     id: Mapped[uuid.UUID] = uuid_mapped_column()
 
-    user_a_id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), 
-        ForeignKey("users.id"), 
-        nullable=False
-    )
-    user_a: Mapped[User] = relationship(
-        foreign_keys=user_a_id,
-        back_populates="sessions_as_a"
-    )
-
-    user_b_id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), 
-        ForeignKey("users.id"), 
-        nullable=False
-    )
-    user_b: Mapped[User] = relationship(
-        foreign_keys=user_b_id,
-        back_populates="sessions_as_b"
-    )
-
-    status: Mapped[str] = mapped_column(
-        String, 
-        default="active", 
-        nullable=False
-    )
-
-    # Picked as the earliest time in the overlap
+    # Picked as the earliest time in the availability overlap
     scheduled_starting_time: Mapped[datetime] = mapped_column(
         TIMESTAMP_WITH_TZ_SEC_PRECISION,
-        nullable=False
+        nullable=False,
     )
 
-    # Set when both users sent a message
-    actual_starting_time: Mapped[datetime] = mapped_column(
+    # Set when the first participant sends a message
+    actual_starting_time: Mapped[Optional[datetime]] = mapped_column(
         TIMESTAMP_WITH_TZ_SEC_PRECISION,
-        nullable=False
+        nullable=True,
     )
 
-    # Populated at the end of sessions
-    ended_at: Mapped[datetime | None] = mapped_column(
+    # Set when the session ends
+    ended_at: Mapped[Optional[datetime]] = mapped_column(
         TIMESTAMP_WITH_TZ_SEC_PRECISION,
-        default=dt_utc_now, 
-        nullable=True
-    )
-    message_count: Mapped[int | None] = mapped_column(
-        Integer, 
-        default=0
-    )
-    user_a_message_count: Mapped[int | None] = mapped_column(
-        Integer, 
-        default=0
-    )
-    user_b_message_count: Mapped[int | None] = mapped_column(
-        Integer, 
-        default=0
+        nullable=True,
     )
 
-    __table_args__ = (
-        ck_user_order(__tablename__),
-        Index(
-            "idx_sessions_pair", "user_a_id", "user_b_id",
-            unique=True,
-            postgresql_where="status = 'active'"
-        )
+    participants: Mapped[list["SessionParticipant"]] = relationship(
+        back_populates="session",
+        cascade="all, delete-orphan",
     )
-    
-
-
-
-
-

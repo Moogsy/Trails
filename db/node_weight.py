@@ -1,6 +1,6 @@
 import uuid
 from datetime import datetime
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 from sqlalchemy import Float, ForeignKey, Integer, UniqueConstraint
 from sqlalchemy.dialects.postgresql import UUID
@@ -33,12 +33,12 @@ class NodeWeight(Base):
     user_id: Mapped[uuid.UUID] = user_uuid_mapped_column()
     user: Mapped[User] = relationship(back_populates="node_weights")
 
-    frequency: Mapped[int] = mapped_column(Integer, default=1, nullable=False)
-    recency_score: Mapped[float] = mapped_column(Float, nullable=True)
-    depth_factor: Mapped[float] = mapped_column(Float, nullable=True)
-    composite_weight: Mapped[float] = mapped_column(Float, nullable=True)
+    appearances: Mapped[int] = mapped_column(Integer, default=1, nullable=False)
+    recency_score: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
+    depth_factor: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
+    composite_weight: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
 
-    last_updated: Mapped[datetime] = mapped_column(
+    last_updated: Mapped[Optional[datetime]] = mapped_column(
         TIMESTAMP_WITH_TZ_SEC_PRECISION,
         nullable=True,
     )

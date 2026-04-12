@@ -19,10 +19,9 @@ class Subscription(Base):
     id: Mapped[uuid.UUID] = uuid_mapped_column()
 
     user_id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), 
-        ForeignKey("users.id"), 
-        nullable=False, 
-        unique=True
+        UUID(as_uuid=True),
+        ForeignKey("users.id"),
+        nullable=False,
     )
     user: Mapped[User] = relationship(back_populates="subscriptions")
 
@@ -41,7 +40,7 @@ class Subscription(Base):
     )
     ends_at: Mapped[Optional[datetime]] = mapped_column(
         TIMESTAMP_WITH_TZ_SEC_PRECISION,
-        nullable=False
+        nullable=True
     )
 
     __table_args__ = (

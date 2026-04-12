@@ -16,23 +16,24 @@ class Question(Base):
 
     id: Mapped[uuid.UUID] = uuid_mapped_column()
 
-    question_family_id: Mapped[uuid.UUID] = mapped_column(
+    family: Mapped[str] = mapped_column(
         Text,
         ForeignKey("questions_families.family"),
-        nullable=False
+        nullable=False,
     )
     question_family: Mapped[QuestionFamily] = relationship(
         back_populates="questions"
     )
+
     value: Mapped[str] = mapped_column(
         Text,
-        nullable=False
+        nullable=False,
     )
     active: Mapped[bool] = mapped_column(
         Boolean,
         nullable=False,
-        default=True
+        default=True,
     )
-    answers: Mapped[list[Answer]] = relationship(
+    answers: Mapped[list["Answer"]] = relationship(
         back_populates="question"
     )

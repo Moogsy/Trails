@@ -3,7 +3,6 @@ import uuid
 from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 from sqlalchemy import String, Boolean
-from sqlalchemy.dialects.postgresql import DATERANGE, DATEMULTIRANGE
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from db.base import (
@@ -18,7 +17,7 @@ from db.answer import Answer
 
 if TYPE_CHECKING:
     from db.match import Match
-    from db.session import Session
+    from db.session_participant import SessionParticipant
     from db.tree_node import TreeNode
     from db.node_weight import NodeWeight
 
@@ -73,17 +72,9 @@ class User(Base):
         foreign_keys="[Match.user_b_id]",
         back_populates="user_b",
     )
-    sessions_as_a: Mapped[list["Session"]] = relationship(
-        foreign_keys="[Session.user_a_id]",
-        back_populates="user_a",
-    )
-    sessions_as_b: Mapped[list["Session"]] = relationship(
-        foreign_keys="[Session.user_b_id]",
-        back_populates="user_b",
+    sessions: Mapped[list["SessionParticipant"]] = relationship(
+        back_populates="user",
     )
 
-    availability_windows: Mapped[list[DATERANGE] | None] = mapped_column(
-        DATEMULTIRANGE
-    )
     tree_nodes: Mapped[list["TreeNode"]] = relationship(back_populates="user")
     node_weights: Mapped[list["NodeWeight"]] = relationship(back_populates="user")
