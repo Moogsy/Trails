@@ -13,6 +13,7 @@ services:
       - APPLE_CLIENT_ID=${APPLE_CLIENT_ID}
       - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
       - EXPO_ACCESS_TOKEN=${EXPO_ACCESS_TOKEN}
+      - JSON_LOGS=false
     depends_on:
       db:
         condition: service_healthy

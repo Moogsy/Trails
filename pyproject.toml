@@ -16,6 +16,7 @@ dependencies = [
     "python-jose[cryptography]>=3.3",
     "cryptography>=46.0.6",
     "exponent-server-sdk>=2.1",
+    "structlog>=25.0",
 ]
 
 [project.optional-dependencies]

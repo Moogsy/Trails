@@ -18,7 +18,10 @@ class Settings(BaseSettings):
 
     sentry_dsn: str = ""
 
-    env: str = "prod"  # "prod" | "test"
+    json_logs: bool = True
+    db_pool_size: int = 3
+    db_max_overflow: int = 2
+    db_pool_timeout: int = 10
 
 
 settings = Settings()

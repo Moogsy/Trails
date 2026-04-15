@@ -1,12 +1,11 @@
 from db import *
 from sqlalchemy import select, or_
-from sqlalchemy.orm import Session as SQLSession
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from datetime import datetime, timezone, timedelta
 
 
-
-def get_eligible_users(db: SQLSession) -> list[User]:
+async def get_eligible_users(db: AsyncSession) -> list[User]:
     now = datetime.now(timezone.utc)
     yesterday = now - timedelta(hours=24)
 
@@ -37,7 +36,5 @@ def get_eligible_users(db: SQLSession) -> list[User]:
         .where(recent_answer_subq)
     )
 
-    result = db.execute(stmt)
-    as_seq = result.scalars().all()
-
-    return list(as_seq)
+    result = await db.execute(stmt)
+    return list(result.scalars().all())

@@ -1,14 +1,12 @@
 from datetime import datetime, timezone
-from db import SessionLocal
-from db import Match
+from db import AsyncSessionLocal, Match
 from matching.pool import get_eligible_users
 from matching.scoring import compute_score
 
 
-def run_batch() -> None:
-    db = SessionLocal()
-    try:
-        users = get_eligible_users(db)
+async def run_batch() -> None:
+    async with AsyncSessionLocal() as db:
+        users = await get_eligible_users(db)
         batch_date = datetime.now(timezone.utc)
 
         for i, user_a in enumerate(users):
@@ -22,6 +20,4 @@ def run_batch() -> None:
                 )
                 db.add(match)
 
-        db.commit()
-    finally:
-        db.close()
+        await db.commit()

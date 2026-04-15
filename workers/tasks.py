@@ -1,4 +1,7 @@
+import asyncio
+
 from workers import app
+from matching.batch import run_batch
 
 
 @app.task(name="workers.tasks.session_winddown")
@@ -21,5 +24,4 @@ def consistency_decay(answer_id: str) -> None:
 
 @app.task(name="workers.tasks.run_match_batch")
 def run_match_batch() -> None:
-    from matching.batch import run_batch
-    run_batch()
+    asyncio.run(run_batch())
